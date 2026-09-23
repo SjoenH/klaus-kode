@@ -2,10 +2,10 @@
   "name": "klaus-kode",
   "version": "1.0.0",
   "license": "MIT",
-  "type": "module",
   "bin": {
     "klaus": "./dist/index.js"
   },
+  "type": "module",
   "scripts": {
     "dev": "oxnode --env-file=.env src/index.ts",
     "build": "tsc",
