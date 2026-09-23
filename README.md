@@ -51,3 +51,7 @@ Du kan gi kommandoer på samme måte som ett vanlig cli program slik
 | `pn fmt`  | Formater koden         |
 | `pn lint` | Lint koden             |
 | `pn fix`  | Formater og lint koden |
+
+Se branch `SOLUTION` for et enkelt forslag til løsning. (WIP)
+
+--- Ekstra exstra ---
