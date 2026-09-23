@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
-import "./config";
 import { bootBanner } from "./bootBanner.js";
+import { ai } from "./config.js";
 
 const program = new Command();
 
 console.log(bootBanner);
 program.name("klaus-code").description("The claude code killer").version("1.0.0");
 
+// example cli command setup below
 program
-  // example cli command setup below
   .command("greet")
   .description("Greet a user")
   .argument("<name>", "The name of the user to greet")
@@ -31,6 +31,7 @@ program
 // Kjør pn dev for å starte klaus.
 
 // - TODO: set up a new command to ask/interact with klaus
+//   -  Hint, need a new program.command()...
 // - TODO: GET the user PROOMPT
 // - TODO: FEED IT TO your choosen one
 // - TODO: SHOW IT back at the user
@@ -40,6 +41,15 @@ program
 // - TODO: PROFIT!
 // - Congrats, you have now been replaced.
 
-// - Optional, wire up System prompt.
+// - Optional, wire up System prompt, give it a personality etc.
 
 program.parse(process.argv);
+
+// Klaus' little Helpers
+
+async function ask(prompt: string) {
+  return await ai.models.generateContent({
+    model: "gemini-3.8-flash", // Use your target Gemini flash model
+    contents: prompt,
+  });
+}

@@ -1,3 +1,4 @@
+import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
 
 const envSchema = z.object({
@@ -15,3 +16,5 @@ if (!result.success) {
 }
 
 export const env = result.data;
+
+export const ai = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
