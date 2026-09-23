@@ -38,6 +38,7 @@ pn dev
 ```
 
 Du kan gi kommandoer på samme måte som ett vanlig cli program slik
+
 ```bash
  pn dev greet Henry
 ```
