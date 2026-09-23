@@ -2,9 +2,13 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "unicorn", "oxc"],
   "categories": {
-    "correctness": "error"
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
   },
-  "rules": {},
+  "rules": {
+    "unicorn/no-array-for-each": "error"
+  },
   "env": {
     "builtin": true
   }
