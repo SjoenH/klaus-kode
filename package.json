@@ -1,0 +1,38 @@
+{
+  "name": "klaus-kode",
+  "version": "1.0.0",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "klaus":"./dist/index.js"
+  },
+  "scripts": {
+    "dev": "tsx --env-file=.env src/index.ts",
+    "build" :"tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "lint": "oxlint --type-aware --fix",
+    "lint:check": "oxlint --check",
+    "fix": "oxfmt && oxlint --type-aware --fix"
+  },
+  "dependencies": {
+    "commander": "^15.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "oxfmt": "^0.70.0",
+    "oxlint": "^1.85.0",
+    "oxlint-tsgolint": "^7.0.2002",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.5.1",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@12.5.1"
+}
