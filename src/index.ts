@@ -3,11 +3,16 @@
 import { Command } from "commander";
 import { bootBanner } from "./bootBanner.js";
 import { ai } from "./config.js";
+import readline from "node:readline/promises";
+import { stdin as input, stdout as output } from "node:process";
 
 const program = new Command();
 
 console.log(bootBanner);
-program.name("klaus-code").description("The claude code killer").version("1.0.0");
+program
+  .name("klaus-code")
+  .description("The claude code killer")
+  .version("1.0.0");
 
 // example cli command setup below
 program
@@ -32,11 +37,30 @@ program
 
 // - TODO: set up a new command to ask/interact with klaus
 //   -  Hint, need a new program.command()...
-// - TODO: GET the user PROOMPT
-// - TODO: FEED IT TO your choosen one
-// - TODO: SHOW IT back at the user
+program
+  .command("chat")
+  .description("chat with Klaus")
+  .action(async () => {
+    const rl = readline.createInterface({ input, output });
+    const chat = [];
+    try {
+      // Make it a loop
+      while (true) {
+        // GET the user PROOMPT
+        const prompt = await rl.question("> ");
+        chat.push(prompt);
+        // FEED IT TO your choosen one
+        const response = await ask(chat.toString());
+        const answer = response.text;
+        chat.push(answer);
+        // SHOW IT back at the user
+        console.log(answer);
+      }
+    } finally {
+      rl.close();
+    }
+  });
 // - TODO: ....
-// - TODO: Make it a loop
 // - TODO: GIVE IT ACCESS to all your stuff (and other tools)
 // - TODO: PROFIT!
 // - Congrats, you have now been replaced.
