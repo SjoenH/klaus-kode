@@ -45,10 +45,7 @@ export async function dearKlaus(wish: string): Promise<GenerateContentResponse> 
       Begin now. The X-Mas invasion has begun, and the user is breathing your air. How do you judge them?`,
       tools: [
         {
-          functionDeclarations: tools.map((tool) => ({
-            name: tool.name,
-            description: tool.description,
-          })),
+          functionDeclarations: tools.map(({ callBack: _skipped, ...declaration }) => declaration),
         },
       ],
     },

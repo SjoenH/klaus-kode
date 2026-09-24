@@ -33,17 +33,11 @@ program
         const prompt = await rl.question("> ");
         chat.push(`Q: ${prompt.trim()}`);
 
+        console.log("...");
         // FEED IT
-        const { text, functionCalls } = await dearKlaus(chat.toString());
+        const response = await dearKlaus(chat.toString());
 
-        // Handle the response. (can be either text or tool-calls)
-        if (text) {
-          // Regular text answer.
-          chat.push(`A: ${text}`);
-          // SHOW IT back at the user
-          console.log(text);
-        }
-
+        const functionCalls = response.functionCalls;
         if (functionCalls) {
           // KLAUS WANTS AGENCY.
           // Who are we to reject his wish? TODO: Safety check
@@ -53,6 +47,12 @@ program
             // PRESENT
             console.log(toolResult);
           }
+        } else {
+          const { text } = response;
+          // Regular text answer.
+          chat.push(`A: ${text}`);
+          // SHOW IT back at the user
+          console.log(text);
         }
       }
     } catch (err) {
