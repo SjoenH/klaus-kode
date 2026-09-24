@@ -16,7 +16,11 @@ export const tools: Tool[] = [
   {
     name: "waitForMs",
     description: "Wait in ms",
-    callBack: (args) => wait(+(args?.ms ?? 0)),
+    parameters: {
+      format: "int32",
+      description: "time to wait in ms",
+    },
+    callBack: (args) => wait(+(args?.ms ?? 0)), // Merk at det kommer som streng og gjøres om til tall https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Unary_plus
   },
 ];
 

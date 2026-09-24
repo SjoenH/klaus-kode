@@ -2,6 +2,7 @@
 
 The "Claude Code killer" CLI harness.
 
+> Hei, dette er ett løsningsforslag koblet opp mot Gemini flash som språkmodell, med ett enkelt oppsett for tool-calling.
 > Laget til faggruppen i Miles - KI-fra-førsteprinsipp [23 September 2026](https://life.miles.no/events/fde56f67-894c-418f-b3a8-9cd2c55575d0).
 
 ## Exorsa
