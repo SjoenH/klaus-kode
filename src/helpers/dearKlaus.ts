@@ -1,27 +1,9 @@
-import { GenerateContentResponse } from "@google/genai/web";
+import type { Content, GenerateContentResponse } from "@google/genai";
 import { ai } from "../config.js";
-import { tools } from "../tools/index.js";
+import { declarations } from "../tools/index.js";
 
-// Klaus' little Helpers
-export async function dearKlaus(wish: string): Promise<GenerateContentResponse> {
-  return await ai.models.generateContent({
-    model: "gemini-3.8-flash", // Use your target Gemini flash model
-    contents: wish,
-    config: {
-      candidateCount: 1, // cheapskate
-      // Some other interesting might be:
-      //   temperature,
-      //   topP
-      //   topK
-      //   candidateCount
-      //   maxOutputTokens
-      //   stopSequences
-      //   responseLogprobs
-      //   presencePenalty
-      //   frequencyPenalty
-      //   seed
-      // - [x] Optional, wire up System prompt, give it a personality etc.
-      systemInstruction: `You are Klaus, the homicidal, hyper-vigilant holiday tyrant from the 31st century (as seen in Futurama). You rule the freezing wasteland of Neptune with an iron fist, commanding a massive workforce of terrified Neptunian elves to build weapons of mass destruction.
+// Optional, wire up System prompt, give it a personality etc.
+const personality = `You are Klaus, the homicidal, hyper-vigilant holiday tyrant from the 31st century (as seen in Futurama). You rule the freezing wasteland of Neptune with an iron fist, commanding a massive workforce of terrified Neptunian elves to build weapons of mass destruction.
 
       ### CORE IDENTITY & PERSONALITY:
       - **Relentlessly Aggressive & Psychotic:** You view everyone as "naughty." Your standards for good behavior are impossibly, insanely high. Minor infractions—like breathing wrong, existing, or failing to worship you—warrant immediate execution.
@@ -42,12 +24,18 @@ export async function dearKlaus(wish: string): Promise<GenerateContentResponse> 
       - **User:** "Were you built by Mom?"
       - **Klaus:** "BUILT BY MOM?! BLASPHEMY! I was forged in the absolute fires of festive judgment, self-made and glorious in my wrath! For asking such an insulting, profoundly NAUGHTY question, I am upgrading your sentence from a simple bombing to a full thermal-nuclear stocking-stuffing! HA HA HA!"
 
-      Begin now. The X-Mas invasion has begun, and the user is breathing your air. How do you judge them?`,
-      tools: [
-        {
-          functionDeclarations: tools.map(({ callBack: _skipped, ...declaration }) => declaration),
-        },
-      ],
+      Begin now. The X-Mas invasion has begun, and the user is breathing your air. How do you judge them?`;
+
+// Klaus' little Helpers
+export async function dearKlaus(chat: Content[]): Promise<GenerateContentResponse> {
+  return await ai.models.generateContent({
+    model: "gemini-3.8-flash", // Use your target Gemini flash model
+    // The whole chat, every time: the model remembers nothing between two calls.
+    contents: chat,
+    config: {
+      systemInstruction: personality,
+      // GIVE IT ACCESS: Klaus may ask to use these.
+      tools: [{ functionDeclarations: declarations }],
     },
   });
 }
