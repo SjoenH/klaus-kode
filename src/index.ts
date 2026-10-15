@@ -35,6 +35,7 @@ program
 // Steg 1: Snakk med Klaus. Kjør pn dev chat.
 // Steg 2: Et første verktøy. Se ./tools/index.ts.
 // Steg 3: Agentløkka.
+// Steg 4: Tilgang, med lov først.
 program
   .command("chat")
   .description("Talk to Klaus")
@@ -67,11 +68,18 @@ program
           }
 
           // KLAUS WANTS AGENCY.
-          // Who are we to reject his wish?
+          // Who are we to reject his wish? We are: useTool asks us first, for the tools that can do harm.
           const toolResults: Part[] = [];
           for (const functionCall of functionCalls) {
-            const toolResult = await useTool(functionCall);
-            console.log(`  ${functionCall.name} => ${toolResult}`);
+            const toolResult = await useTool(
+              functionCall,
+              async (question) => await rl.question(question),
+            );
+            // A tool's result can be a whole file: show the first line of it.
+            const [firstLine] = toolResult.split("\n");
+            console.log(
+              `  ${functionCall.name} => ${firstLine}${toolResult.includes("\n") ? " …" : ""}`,
+            );
             toolResults.push({
               functionResponse: {
                 id: functionCall.id,
@@ -89,10 +97,7 @@ program
     }
   });
 
-// Steg 4: Tilgang
-// - TODO: GIVE IT ACCESS to all your stuff (and other tools)
-// - TODO: Safety check
-// - TODO: PROFIT!
+// - PROFIT!
 // - Congrats, you have now been replaced.
 
 program.parse(process.argv);
