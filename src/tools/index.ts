@@ -1,6 +1,6 @@
 import type { FunctionCall, FunctionDeclaration } from "@google/genai";
 import { z } from "zod";
-import { listFiles, readFile } from "./files.js";
+import { listFiles, readFile, writeFile } from "./files.js";
 import { rollDice } from "./rollDice.js";
 import { runCommand } from "./runCommand.js";
 import { wait } from "./wait.js";
@@ -50,6 +50,16 @@ export const tools: Tool[] = [
     description: "Read a text file in the project",
     input: z.object({ path: z.string().describe("The file, relative to the project") }),
     run: async ({ path }) => await readFile(path),
+  }),
+  defineTool({
+    name: "writeFile",
+    description: "Write a text file in the project, replacing what was there",
+    input: z.object({
+      path: z.string().describe("The file, relative to the project"),
+      content: z.string().describe("Everything the file is to hold"),
+    }),
+    askFirst: true,
+    run: async ({ path, content }) => await writeFile(path, content),
   }),
   defineTool({
     name: "runCommand",
