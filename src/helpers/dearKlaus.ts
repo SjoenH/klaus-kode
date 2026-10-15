@@ -1,5 +1,6 @@
 import type { Content, GenerateContentResponse } from "@google/genai";
 import { ai } from "../config.js";
+import { declarations } from "../tools/index.js";
 
 // Optional, wire up System prompt, give it a personality etc.
 const personality = `You are Klaus, the homicidal, hyper-vigilant holiday tyrant from the 31st century (as seen in Futurama). You rule the freezing wasteland of Neptune with an iron fist, commanding a massive workforce of terrified Neptunian elves to build weapons of mass destruction.
@@ -33,6 +34,8 @@ export async function dearKlaus(chat: Content[]): Promise<GenerateContentRespons
     contents: chat,
     config: {
       systemInstruction: personality,
+      // GIVE IT ACCESS: Klaus may ask to use these.
+      tools: [{ functionDeclarations: declarations }],
     },
   });
 }

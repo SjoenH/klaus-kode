@@ -7,6 +7,7 @@ import type { Content } from "@google/genai";
 import { Command } from "commander";
 import { bootBanner } from "./bootBanner.js";
 import { dearKlaus } from "./helpers/dearKlaus.js";
+import { useTool } from "./tools/index.js";
 
 const program = new Command();
 
@@ -32,6 +33,7 @@ program
 // ▀ ▀ ▀▀▀ ▀ ▀ ▀▀▀ ▀▀▀      ▀ ▀ ▀▀▀ ▀▀  ▀▀▀
 
 // Steg 1: Snakk med Klaus. Kjør pn dev chat.
+// Steg 2: Et første verktøy. Se ./tools/index.ts.
 program
   .command("chat")
   .description("Talk to Klaus")
@@ -49,19 +51,26 @@ program
         // FEED IT
         console.log("...");
         const response = await dearKlaus(chat);
-        chat.push({ role: "model", parts: [{ text: response.text ?? "" }] });
 
-        // SHOW IT back at the user
-        console.log(response.text);
+        // KLAUS WANTS AGENCY.
+        // Who are we to reject his wish?
+        const functionCalls = response.functionCalls ?? [];
+        for (const functionCall of functionCalls) {
+          const toolResult = await useTool(functionCall);
+          console.log(toolResult);
+        }
+
+        if (functionCalls.length === 0) {
+          chat.push({ role: "model", parts: [{ text: response.text ?? "" }] });
+          // SHOW IT back at the user
+          console.log(response.text);
+        }
       }
     } finally {
       rl.close();
     }
   });
 
-// Steg 2: Et første verktøy
-// - TODO: GIVE IT ACCESS to a tool: roll the dice
-//
 // Steg 3: Agentløkka
 // - TODO: ....send the tool result back, until klaus is done
 //
