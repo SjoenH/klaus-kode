@@ -3,7 +3,7 @@
 
 import { stdin as input, stdout as output } from "node:process";
 import readline from "node:readline/promises";
-import type { Content } from "@google/genai";
+import type { Content, Part } from "@google/genai";
 import { Command } from "commander";
 import { bootBanner } from "./bootBanner.js";
 import { dearKlaus } from "./helpers/dearKlaus.js";
@@ -34,6 +34,7 @@ program
 
 // Steg 1: Snakk med Klaus. Kjør pn dev chat.
 // Steg 2: Et første verktøy. Se ./tools/index.ts.
+// Steg 3: Agentløkka.
 program
   .command("chat")
   .description("Talk to Klaus")
@@ -48,22 +49,39 @@ program
         const prompt = await rl.question("> ");
         chat.push({ role: "user", parts: [{ text: prompt }] });
 
-        // FEED IT
-        console.log("...");
-        const response = await dearKlaus(chat);
+        // The agent loop: Klaus goes on until he answers with words instead of a tool call.
+        while (true) {
+          // FEED IT
+          console.log("...");
+          const response = await dearKlaus(chat);
 
-        // KLAUS WANTS AGENCY.
-        // Who are we to reject his wish?
-        const functionCalls = response.functionCalls ?? [];
-        for (const functionCall of functionCalls) {
-          const toolResult = await useTool(functionCall);
-          console.log(toolResult);
-        }
+          // Everything Klaus says goes into the chat, his tool calls too.
+          const answer = response.candidates?.[0]?.content;
+          if (answer) chat.push(answer);
 
-        if (functionCalls.length === 0) {
-          chat.push({ role: "model", parts: [{ text: response.text ?? "" }] });
-          // SHOW IT back at the user
-          console.log(response.text);
+          const functionCalls = response.functionCalls ?? [];
+          if (functionCalls.length === 0) {
+            // SHOW IT back at the user
+            console.log(response.text);
+            break;
+          }
+
+          // KLAUS WANTS AGENCY.
+          // Who are we to reject his wish?
+          const toolResults: Part[] = [];
+          for (const functionCall of functionCalls) {
+            const toolResult = await useTool(functionCall);
+            console.log(`  ${functionCall.name} => ${toolResult}`);
+            toolResults.push({
+              functionResponse: {
+                id: functionCall.id,
+                name: functionCall.name,
+                response: { result: toolResult },
+              },
+            });
+          }
+          // ...and the results go back to Klaus, before he says anything to us.
+          chat.push({ role: "user", parts: toolResults });
         }
       }
     } finally {
@@ -71,9 +89,6 @@ program
     }
   });
 
-// Steg 3: Agentløkka
-// - TODO: ....send the tool result back, until klaus is done
-//
 // Steg 4: Tilgang
 // - TODO: GIVE IT ACCESS to all your stuff (and other tools)
 // - TODO: Safety check
