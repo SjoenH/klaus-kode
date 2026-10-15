@@ -8,9 +8,9 @@ const envSchema = z.object({
 const result = envSchema.safeParse(process.env);
 if (!result.success) {
   console.error("\n\nCONFIGURATION ERROR:");
-  result.error.issues.forEach((issue) => {
+  for (const issue of result.error.issues) {
     console.error(`  - ${issue.path.toString()} - ${issue.message}`);
-  });
+  }
   console.error("\n");
   process.exit(1);
 }
