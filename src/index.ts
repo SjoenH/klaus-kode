@@ -1,8 +1,12 @@
 #!/usr/bin/env node
+// oxlint-disable no-await-in-loop
 
+import { stdin as input, stdout as output } from "node:process";
+import readline from "node:readline/promises";
+import type { Content } from "@google/genai";
 import { Command } from "commander";
 import { bootBanner } from "./bootBanner.js";
-import { ai } from "./config.js";
+import { dearKlaus } from "./helpers/dearKlaus.js";
 
 const program = new Command();
 
@@ -27,19 +31,34 @@ program
 // ▓▀▄ ▓░  █▀▓ █ ▓ ▀▀▓      ▓▀▄ █ ▓ █ ▓ ▓▀
 // ▀ ▀ ▀▀▀ ▀ ▀ ▀▀▀ ▀▀▀      ▀ ▀ ▀▀▀ ▀▀  ▀▀▀
 
-// ƒør du begynner. Se Readme for hva du trenger
-// Kjør pn dev for å starte klaus.
+// Steg 1: Snakk med Klaus. Kjør pn dev chat.
+program
+  .command("chat")
+  .description("Talk to Klaus")
+  .action(async () => {
+    const rl = readline.createInterface({ input, output });
+    // Make it remember: the chat so far, each message with who said it.
+    const chat: Content[] = [];
+    try {
+      // Make it a loop
+      while (true) {
+        // GET the user PROOMPT
+        const prompt = await rl.question("> ");
+        chat.push({ role: "user", parts: [{ text: prompt }] });
 
-// Steg 1: Snakk med Klaus
-// - TODO: set up a new command to ask/interact with klaus
-//   -  Hint, need a new program.command()...
-// - TODO: GET the user PROOMPT
-// - TODO: FEED IT TO your choosen one
-// - TODO: SHOW IT back at the user
-// - TODO: Make it a loop
-// - TODO: Make it remember: send the whole chat, with roles
-// - TODO: Give it a personality (system prompt)
-//
+        // FEED IT
+        console.log("...");
+        const response = await dearKlaus(chat);
+        chat.push({ role: "model", parts: [{ text: response.text ?? "" }] });
+
+        // SHOW IT back at the user
+        console.log(response.text);
+      }
+    } finally {
+      rl.close();
+    }
+  });
+
 // Steg 2: Et første verktøy
 // - TODO: GIVE IT ACCESS to a tool: roll the dice
 //
@@ -53,13 +72,3 @@ program
 // - Congrats, you have now been replaced.
 
 program.parse(process.argv);
-
-// Klaus' little Helpers
-
-// oxlint-disable-next-line no-unused-vars -- du tar den i bruk i steg 1
-async function ask(prompt: string) {
-  return await ai.models.generateContent({
-    model: "gemini-3.8-flash", // Use your target Gemini flash model
-    contents: prompt,
-  });
-}
